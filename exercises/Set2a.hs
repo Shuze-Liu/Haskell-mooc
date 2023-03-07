@@ -21,7 +21,8 @@ import Data.List
 -- Ex 1: Define the constant years, that is a list of the values 1982,
 -- 2004 and 2020 in this order.
 
-years = todo
+years :: [Int]
+years = [1982, 2004, 2020]
 
 ------------------------------------------------------------------------------
 -- Ex 2: define the function takeFinal, which returns the n last
@@ -32,7 +33,7 @@ years = todo
 -- Hint! remember the take and drop functions.
 
 takeFinal :: Int -> [a] -> [a]
-takeFinal n xs = todo
+takeFinal n xs = if n >= length xs then xs else drop (length xs - n) xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: Update an element at a certain index in a list. More
@@ -46,8 +47,8 @@ takeFinal n xs = todo
 --   updateAt 2 0 [4,5,6,7] ==>  [4,5,0,7]
 
 updateAt :: Int -> a -> [a] -> [a]
-updateAt i x xs = todo
-
+updateAt i x xs = let (ys, zs) = splitAt i xs in ys ++ x : tail zs
+-- updateAt i x xs = take i xs ++ [x] ++ drop (i+1) xs
 ------------------------------------------------------------------------------
 -- Ex 4: substring i j s should return the substring of s starting at
 -- index i and ending at (right before) index j. Indexes start from 0.
@@ -58,10 +59,12 @@ updateAt i x xs = todo
 --   substring 2 5 "abcdefgh"  ==>  "cde"
 --   substring 2 2 "abcdefgh"  ==>  ""
 --   substring 0 4 "abcdefgh"  ==>  "abcd"
-
 substring :: Int -> Int -> String -> String
-substring i j s = todo
-
+substring i j s = let (ys, _) = splitAt j s 
+                  in let (_, zs) = splitAt i ys 
+                  in zs
+-- substring i j s = drop i (take j s)
+-- I used splitAt too much! when we doesn't care about both end of split result, take/drop is better! 
 ------------------------------------------------------------------------------
 -- Ex 5: check if a string is a palindrome. A palindrome is a string
 -- that is the same when read backwards.
@@ -75,7 +78,7 @@ substring i j s = todo
 --   isPalindrome "AB"       ==>  False
 
 isPalindrome :: String -> Bool
-isPalindrome str = todo
+isPalindrome str = reverse str == str
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement the function palindromify that chops a character
@@ -89,7 +92,8 @@ isPalindrome str = todo
 --   palindromify "abracacabra" ==> "acaca"
 
 palindromify :: String -> String
-palindromify s = todo
+palindromify s = if reverse s == s then s 
+                 else palindromify (init (tail s))
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement safe integer division, that is, a function that
@@ -102,8 +106,14 @@ palindromify s = todo
 --   safeDiv 4 0  ==> Nothing
 
 safeDiv :: Integer -> Integer -> Maybe Integer
-safeDiv x y = todo
-
+safeDiv x y 
+    | y /= 0 = Just (div x y)
+    | otherwise = Nothing
+{-
+when encounter fixed value, template matching is better option
+safeDiv x 0 = Nothing
+safeDiv x y = Just (div x y)
+-}
 ------------------------------------------------------------------------------
 -- Ex 8: implement a function greet that greets a person given a first
 -- name and possibly a last name. The last name is represented as a
@@ -114,8 +124,8 @@ safeDiv x y = todo
 --   greet "John" (Just "Smith")  ==> "Hello, John Smith!"
 
 greet :: String -> Maybe String -> String
-greet first last = todo
-
+greet first Nothing = "Hello, " ++ first ++ "!"
+greet first (Just last) = "Hello, " ++ first ++ " " ++ last ++ "!"
 ------------------------------------------------------------------------------
 -- Ex 9: safe list indexing. Define a function safeIndex so that
 --   safeIndex xs i
@@ -130,7 +140,9 @@ greet first last = todo
 --   safeIndex ["a","b","c"] (-1)  ==> Nothing
 
 safeIndex :: [a] -> Int -> Maybe a
-safeIndex xs i = todo
+safeIndex xs i
+    | length xs > i && i >= 0 = Just (xs !! i)
+    | otherwise = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 10: another variant of safe division. This time you should use
@@ -141,7 +153,9 @@ safeIndex xs i = todo
 --   eitherDiv 4 0   ==> Left "4/0"
 
 eitherDiv :: Integer -> Integer -> Either String Integer
-eitherDiv x y = todo
+eitherDiv x y
+    | y == 0 = Left (show x ++ "/" ++ show y)
+    | otherwise = Right (div x y)
 
 ------------------------------------------------------------------------------
 -- Ex 11: implement the function addEithers, which combines two values of type
@@ -158,4 +172,6 @@ eitherDiv x y = todo
 --   addEithers (Left "boom") (Left "fail") ==> Left "boom"
 
 addEithers :: Either String Int -> Either String Int -> Either String Int
-addEithers a b = todo
+addEithers (Right x) (Right y) = Right(x + y)
+addEithers (Left x) _ = Left x
+addEithers (Right _) (Left x) = Left x
