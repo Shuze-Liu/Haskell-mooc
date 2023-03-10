@@ -121,7 +121,7 @@ myHead xs = foldr headHelper Nothing xs
 
 headHelper :: a -> Maybe a -> Maybe a
 headHelper x t = Just x
--- ! understand that elements are accessed backward
+-- ! elements are accessed backward
 -- headHelper x Nothing = Just x
 -- headHelper x t = Just t
 
